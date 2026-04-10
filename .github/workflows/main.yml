@@ -1,0 +1,49 @@
+name: Build IS-S10 U-Boot
+
+# 触发条件：当你 push 代码或者在网页上手动触发时运行
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04 # 使用较新的 Ubuntu 镜像，工具链比较全
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Install Cross-Compilers and Dependencies
+      # 根据你的 build.sh，你需要 64 位和 32 位的 ARM 编译器
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-aarch64-linux-gnu gcc-arm-linux-gnueabihf
+        sudo apt-get install -y build-essential bison flex libssl-dev bc libncurses-dev
+        # 安装 python 用于可能需要的设备树编译或脚本
+        sudo apt-get install -y python3 python-is-python3
+
+    - name: Run Build Script
+      run: |
+        # 赋予脚本执行权限
+        chmod +x ./build.sh
+        # 执行脚本，编译正常的启动文件
+        ./build.sh
+
+    - name: Upload l-loader.bin (Final Bootloader)
+      uses: actions/upload-artifact@v3
+      with:
+        name: is-s10-bootloader
+        # 根据 build.sh 的逻辑，最终产物会被复制到根目录的 l-loader.bin
+        path: l-loader.bin
+        
+    - name: Build Recovery Fastboot (Optional)
+      run: |
+        # 执行脚本，编译恢复模式的 fastboot.bin
+        ./build.sh RECOVERY
+
+    - name: Upload fastboot.bin (Recovery Bootloader)
+      uses: actions/upload-artifact@v3
+      with:
+        name: is-s10-fastboot
+        path: fastboot.bin
