@@ -3,7 +3,7 @@
 ATF_DEBUG=0
 UBOOT_CFG=u-boot-sn1.config
 CROSS_64=aarch64-linux-gnu-
-CROSS_32=arm-linux-gnueabihf-
+CROSS_32=arm-linux-gnueabi-
 
 rm -f fastboot.bin l-loader.bin
 
