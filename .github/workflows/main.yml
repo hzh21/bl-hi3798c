@@ -8,19 +8,17 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04 # 使用较新的 Ubuntu 镜像，工具链比较全
+    runs-on: ubuntu-22.04 # 使用较新的 Ubuntu 镜像
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4 # 升级到了 v4
 
     - name: Install Cross-Compilers and Dependencies
-      # 根据你的 build.sh，你需要 64 位和 32 位的 ARM 编译器
       run: |
         sudo apt-get update
         sudo apt-get install -y gcc-aarch64-linux-gnu gcc-arm-linux-gnueabihf
         sudo apt-get install -y build-essential bison flex libssl-dev bc libncurses-dev
-        # 安装 python 用于可能需要的设备树编译或脚本
         sudo apt-get install -y python3 python-is-python3
 
     - name: Run Build Script
@@ -31,10 +29,9 @@ jobs:
         ./build.sh
 
     - name: Upload l-loader.bin (Final Bootloader)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4 # 升级到了 v4
       with:
         name: is-s10-bootloader
-        # 根据 build.sh 的逻辑，最终产物会被复制到根目录的 l-loader.bin
         path: l-loader.bin
         
     - name: Build Recovery Fastboot (Optional)
@@ -43,7 +40,7 @@ jobs:
         ./build.sh RECOVERY
 
     - name: Upload fastboot.bin (Recovery Bootloader)
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4 # 升级到了 v4
       with:
         name: is-s10-fastboot
         path: fastboot.bin
