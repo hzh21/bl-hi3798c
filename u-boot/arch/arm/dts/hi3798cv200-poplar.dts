@@ -33,15 +33,19 @@
 
 &gmac1 {
 	status = "okay";
-	#address-cells = <1>;
-	#size-cells = <0>;
-	phy-handle = <&eth_phy1>;
-	phy-mode = "mii";
-	hisilicon,phy-reset-delays-us = <10000 10000 30000>;
-	hisilicon,phy-reset-gpio = <&gpio0 0 0>;
-	eth_phy1: phy@1 {
-		reg = <1>;
-	};
+    phy-mode = "rmii"; 
+    phy-handle = <&eth_phy1>;
+
+    /* 必须显式处理复位 */
+    resets = <&crg 0xcc 9>, <&crg 0xcc 11>;
+    reset-names = "mac_core", "mac_ifc";
+
+    hisilicon,phy-reset-delays-us = <10000 10000 30000>;
+    hisilicon,phy-reset-gpio = <&gpio0 0 1>; /* 1 表示低电平复位 */
+
+    eth_phy1: phy@1 {
+        reg = <1>;
+    };
 };
 
 &uart2 {
